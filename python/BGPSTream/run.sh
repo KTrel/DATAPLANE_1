@@ -1,6 +1,6 @@
 #!/bin/bash
 
-start_ts=1000
+start_ts=1454191428
 interval=3600
 nbproc=24
 

@@ -76,7 +76,8 @@ def main():
 
                     # if cnt == 100:
                     #     break
-
+    print 'Successful termination; Start time: {0}'.format(start)
 
 if __name__ == '__main__':
     main()
+

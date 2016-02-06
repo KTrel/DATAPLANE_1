@@ -1,5 +1,5 @@
 import requests
-import arparse
+import argparse
 import json
 from sets import Set
 import time
@@ -8,8 +8,8 @@ import datetime
 
 class Probe:
 
-    def __init__ (self, probe_id, asn, country_code, lat, lgt, ipv4='unknown', \
-    nat="unknown", system="unknown", status="unknown", public="unknown", ipv6_works='no',
+    def __init__ (self, probe_id, asn, country_code, lat, lgt, is_anchor, ipv4_prefix, ipv4='unknown', \
+    nat="unknown", system="unknown", status="unknown", public="unknown", ipv6_works='no', \
     rfc1918 = 'unknown', tagged='unknown', home='unknown', core='unknown', isp='unknown', \
     academic='unknown', start_time='unknown'):
         self.probe_id = probe_id
@@ -30,34 +30,15 @@ class Probe:
         self.isp = isp
         self.academic = academic
         self.start_time = start_time
-
-        Probe.total_probes += 1
-        if self.ipv4 is not None:
-            Probe.total_ipv4 += 1
-        if self.ipv6_works == "yes":
-            Probe.total_ipv6 += 1
-        if self.nat == "nat":
-            Probe.total_nat += 1
-        if self.nat == "no-nat":
-            Probe.total_no_nat += 1
-        if self.public:
-            Probe.total_public += 1
-        if self.system == "system-v1":
-            Probe.total_v1 += 1
-        if self.system == "system-v2":
-            Probe.total_v2 += 1
-        if self.system == "system-v3":
-            Probe.total_v3 += 1
-        if country_code not in Probe.total_countries:
-            Probe.total_countries[country_code] = 1
-        else:
-            Probe.total_countries[country_code] += 1
+        self.is_anchor = is_anchor
+        self.ipv4_prefix = ipv4_prefix
 
     def __hash__(self):    
         return hash(self.probe_id)
 
     def __repr__(self):
         return str(self.probe_id)+'\t'+str(self.asn)+'\t'+str(self.country_code)+'\t' \
+            +str(self.is_anchor)+'\t'+str(self.ipv4_prefix)+'\t' \
             +str(self.lat)+'\t'+str(self.lgt)+'\t'+str(self.ipv4)+"\t"+self.nat+"\t" \
             +self.system+'\t'+str(self.status)+'\t'+str(self.public)+'\t'+str(self.ipv6_works)+'\t' \
             +str(self.rfc1918)+'\t'+str(self.tagged)+'\t'+str(self.home)+'\t' \
@@ -65,7 +46,7 @@ class Probe:
     
     @staticmethod
     def header ():
-        return '#ID\tASN\tCOUNTRY\tLAT\t\tLGT\tIPV4\t\tNAT\tSYSTEM\t\tSTATUS\tPUBLIC\tIVP6\tRFC1918\tTAGGED\tHOME\tCORE\tISP\tACADEMIC'
+        return '#ID\tASN\tCOUNTRY\tIS_ANCHOR\tV4_PREF\tLAT\tLGT\tIPV4\t\tNAT\tSYSTEM\t\tSTATUS\tPUBLIC\tIVP6\tRFC1918\tTAGGED\tHOME\tCORE\tISP\tACADEMIC'
 
 
 
@@ -142,7 +123,7 @@ def get_probes():
 
         if p["status"] == 1:
             probe = Probe(int(p["id"]), p['asn_v4'], \
-            p['country_code'], p['latitude'], p['longitude'], \
+            p['country_code'], p['latitude'], p['longitude'], p['is_anchor'], p['prefix_v4'],\
             p['address_v4'], nat, system, p["status"], p['is_public'], ipv6_works, \
             rfc1918, tagged_by_users, home, core, isp, academic)
             probes_list[int(p["id"])] = probe
@@ -152,28 +133,19 @@ def get_probes():
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser("Given a list of ASes or countries, this scripts \
-    collects all the probes that are in this set of ASes/countries.")
-    parser.add_argument("infile", type=str, help="File with a list of ASes")
+    parser = argparse.ArgumentParser("Print in an file all the IP addresses of the anchors.")
     parser.add_argument("outfile", type=str, help="Outfile")
     args = parser.parse_args()
-    infile = args.infile
     outfile = args.outfile
 
-    fd_res = open(outfile, 'w', 1)
-    fd_res.write(Probe.header()+'\n')
+    probes_list = get_probes()
 
-    fd = open(infile, 'r')
-    for line in fd.readlines():
-
-        v = line.split()
-        country = v[0]
-
-        #asn = line.rstrip()
-        probes_list = get_country_probes (country)
+    fd_out = open(outfile, 'w')
     
-        for probe in probes_list:
-            fd_res.write(str(probe)+'\n')
+    fd_out.write(Probe.header()+'\n')
+    for pid, p in probes_list.items():
+        if p.is_anchor:
+            fd_out.write(str(p)+'\n')
 
-    fd.close()
-    fd_res.close()
+    fd_out.close()
+

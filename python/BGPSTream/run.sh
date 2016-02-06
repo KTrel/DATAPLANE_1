@@ -1,8 +1,8 @@
 #!/bin/bash
 
-start_ts=1454191428
+start_ts=1448928000
 interval=3600
-nbproc=24
+nbproc=31
 
 for i in `seq 0 $nbproc`;
 do

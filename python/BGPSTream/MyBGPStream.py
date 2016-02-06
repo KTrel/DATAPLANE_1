@@ -24,7 +24,7 @@ def main():
     end = options.end_time
 
     target_prefs = []
-    with open('./atlas/anchor_prefix.txt', 'rb') as br:
+    with open('./../../atlas/anchor_prefix.txt', 'rb') as br:
         for l in br:
             target_prefs.append(l.strip())
 

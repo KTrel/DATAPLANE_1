@@ -32,44 +32,47 @@ def main():
     stream = BGPStream()
     rec = BGPRecord()
 
-    for pref in target_prefs:
-        print pref
-        stream.add_filter('prefix', pref)
-        # stream.add_filter('prefix','0.0.0.0/0')
+    with open('./data/stream_{0}'.format(start), 'wb') as bw:
+        for pref in target_prefs:
+            print pref
+            stream.add_filter('prefix', pref)
+            # stream.add_filter('prefix','0.0.0.0/0')
 
-        # Consider RIPE RRC 10 only
-        stream.add_filter('record-type', 'updates')
-        stream.add_filter('collector', 'rrc11')
+            # Consider RIPE RRC 10 only
+            stream.add_filter('record-type', 'updates')
+            stream.add_filter('collector', 'rrc11')
 
-        # Consider this time interval:
-        # Sat Aug  1 08:20:11 UTC 2015
-        # stream.add_interval_filter(1438417216,1438417216)
-        # stream.add_interval_filter(1451606400,1454785264
-        stream.add_interval_filter(start, end)
+            # Consider this time interval:
+            # Sat Aug  1 08:20:11 UTC 2015
+            # stream.add_interval_filter(1438417216,1438417216)
+            # stream.add_interval_filter(1451606400,1454785264
+            stream.add_interval_filter(start, end)
 
-        # Start the stream
-        stream.start()
+            # Start the stream
+            stream.start()
 
-        # Get next record
-        cnt = 0
-        while stream.get_next_record(rec):
-            # Print the record information only if it is not a valid record
-            if rec.status != "valid":
-                pass
-                # print '*', rec.project, rec.collector, rec.type, rec.time, rec.status
-            else:
-                cnt += 1
-                elem = rec.get_next_elem()
-                while elem:
-                    if elem.type == 'S':
-                        continue
-                    # Print record and elem information
-                    print rec.project, rec.collector, rec.type, rec.time, rec.status,
-                    print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
+            # Get next record
+            cnt = 0
+
+            while stream.get_next_record(rec):
+                # Print the record information only if it is not a valid record
+                if rec.status != "valid":
+                    pass
+                    # print '*', rec.project, rec.collector, rec.type, rec.time, rec.status
+                else:
+                    cnt += 1
                     elem = rec.get_next_elem()
+                    while elem:
+                        if elem.type == 'S':
+                            continue
+                        # Print record and elem information
+                        # print rec.project, rec.collector, rec.type, rec.time, rec.status,
+                        # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
+                        bw.write('{0}\t{1}\t{2}\t{3}\t{4}\n'.format(rec.time, elem.type, elem.peer_address, elem.peer_asn, elem.fields))
+                        elem = rec.get_next_elem()
 
-                # if cnt == 100:
-                #     break
+                    # if cnt == 100:
+                    #     break
 
 
 if __name__ == '__main__':

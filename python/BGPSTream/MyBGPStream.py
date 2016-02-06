@@ -40,7 +40,7 @@ def main():
 
             # Consider RIPE RRC 10 only
             stream.add_filter('record-type', 'updates')
-            stream.add_filter('collector', 'rrc11')
+            stream.add_filter('collector', 'rrc00')
 
             # Consider this time interval:
             # Sat Aug  1 08:20:11 UTC 2015

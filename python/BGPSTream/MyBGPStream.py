@@ -68,7 +68,9 @@ def main():
                         # Print record and elem information
                         # print rec.project, rec.collector, rec.type, rec.time, rec.status,
                         # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
-                        bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n'.format(rec.time, elem.type, elem.fields['prefix'], elem.peer_address, elem.peer_asn, elem.fields))
+                        bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\n'.format(
+                            rec.project, rec.collector, rec.type, rec.time, rec.status,
+                            elem.type, elem.fields['prefix'], elem.peer_address, elem.peer_asn, elem.fields))
                         elem = rec.get_next_elem()
 
                     # if cnt == 100:

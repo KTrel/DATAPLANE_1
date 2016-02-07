@@ -12,7 +12,7 @@ class StateMatcher(object):
         # self.trace_bgp_math_graph = nx.DiGraph()
         self.prefix_radix = radix.Radix()
         self.pref_d_c = {}
-        # self.c_pref_d = {}
+        self.pref_c_d = {}
 
         ifp = '../../atlas/anchor_prefix.txt'
         br = open(ifp, 'rb')
@@ -59,6 +59,8 @@ class StateMatcher(object):
             print pref_d
             if pref_d not in self.pref_d_c:
                 self.pref_d_c[pref_d] = {}
+            if pref_d not in self.pref_c_d:
+                self.pref_c_d[pref_d] = {}
             best_match_val = sys.maxint
             best_match_lst = []
             # raw_input('...')
@@ -73,11 +75,11 @@ class StateMatcher(object):
 
                     self.pref_d_c[pref_d][vp_d][vp_c] = [dist, max(len(aspath_d.split()), len(aspath_c))]
 
-                    # if vp_c not in self.c_pref_d:
-                    #     self.c_pref_d[vp_c] = {}
-                    # if pref_d not in self.c_pref_d[vp_c]:
-                    #     self.c_pref_d[vp_c][pref_d] = {}
-                    # self.c_pref_d[vp_c][pref_d][vp_d] = [dist, {'data': aspath_d, 'ctrl': aspath_c}]
+                    if vp_c not in self.pref_c_d[pref_d]:
+                        self.pref_c_d[pref_d][vp_c] = {}
+                    if vp_d not in self.pref_c_d[pref_d][vp_c]:
+                        self.pref_c_d[pref_d][vp_c] = {}
+                    self.pref_c_d[pref_d][vp_c][vp_d] = [dist, max(len(aspath_d.split()), len(aspath_c))]
 
                     if dist < best_match_val:
                         best_match_val = dist
@@ -98,7 +100,7 @@ class StateMatcher(object):
         # plt.show()
         ofp = u'./data/matching.txt'
         with open(ofp, 'w') as outfile:
-            json.dump(self.pref_d_c, outfile, indent=4, separators=(',', ': '))
+            json.dump(self.pref_c_d, outfile, indent=4, separators=(',', ': '))
 
 if __name__ == '__main__':
     sm = StateMatcher()

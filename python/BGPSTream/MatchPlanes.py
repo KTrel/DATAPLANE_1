@@ -5,12 +5,13 @@ import matplotlib.pyplot as plt
 import sys
 import json
 
+
 class StateMatcher(object):
     def __init__(self):
         self.trace_bgp_math_graph = nx.DiGraph()
         self.prefix_radix = radix.Radix()
         self.pref_d_c = {}
-        self.c_pref_d = {}
+        # self.c_pref_d = {}
 
         ifp = '../../atlas/anchor_prefix.txt'
         br = open(ifp, 'rb')
@@ -41,7 +42,7 @@ class StateMatcher(object):
             tokens = l.split()
             pref = self.prefix_radix.search_best(tokens[2])
             pref = pref.prefix
-            collector = '.'.join(tokens[0:1])
+            collector = ':'.join(tokens[0:2])
             as_path = ' '.join(tokens[3:])
             if pref not in self.bgp_state:
                 self.bgp_state[pref] = {}
@@ -67,13 +68,13 @@ class StateMatcher(object):
                 for vp_c, aspath_c in vp_aspth_dict_c.iteritems():
                     dist = editdistance.eval(aspath_c.split(), aspath_d.split())
 
-                    self.pref_d_c[pref_d][vp_d][vp_c] = dist
+                    self.pref_d_c[pref_d][vp_d][vp_c] = [dist, {'data': aspath_d, 'ctrl': aspath_c}]
 
-                    if vp_c not in self.c_pref_d:
-                        self.c_pref_d[vp_c] = {}
-                    if pref_d not in self.c_pref_d[vp_c]:
-                        self.c_pref_d[vp_c][pref_d] = {}
-                    self.c_pref_d[vp_c][pref_d] = [dist, {'data': aspath_d, 'ctrl': aspath_c}]
+                    # if vp_c not in self.c_pref_d:
+                    #     self.c_pref_d[vp_c] = {}
+                    # if pref_d not in self.c_pref_d[vp_c]:
+                    #     self.c_pref_d[vp_c][pref_d] = {}
+                    # self.c_pref_d[vp_c][pref_d][vp_d] = [dist, {'data': aspath_d, 'ctrl': aspath_c}]
 
                     if dist < best_match_val:
                         best_match_val = dist
@@ -93,7 +94,7 @@ class StateMatcher(object):
         # plt.show()
         ofp = u'./data/matching.txt'
         with open(ofp, 'w') as outfile:
-            json.dump(self.c_pref_d, outfile)
+            json.dump(self.pref_d_c, outfile, indent=4, separators=(',', ': '))
 
 if __name__ == '__main__':
     sm = StateMatcher()

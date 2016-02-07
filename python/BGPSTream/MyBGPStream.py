@@ -35,8 +35,8 @@ def main():
 
     with open('./data/stream_{0}'.format(start), 'wb') as bw:
         #for pref in target_prefs:
-        #for ptmp in target_prefs:
-        #    stream.add_filter('prefix', ptmp)
+        for ptmp in target_prefs:
+            stream.add_filter('prefix', ptmp)
         # stream.add_filter('prefix','0.0.0.0/0')
 
         # Consider RIPE RRC 10 only

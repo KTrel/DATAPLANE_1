@@ -150,6 +150,6 @@ class StateMatcher(object):
 if __name__ == '__main__':
     sm = StateMatcher()
     sm.match_states()
-    
-    # sm.keep_updating()
+    sm.keep_updating()
+
     # sm.show_graph()

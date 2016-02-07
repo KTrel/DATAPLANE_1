@@ -38,6 +38,8 @@ def main(rib, target_prefs):
         stream.add_filter('record-type', 'updates')
         stream.add_filter('record-type', 'ribs')
         #stream.add_filter('collector', 'rrc04')
+        stream.add_filter('project', 'ris')
+        stream.add_filter('project', 'route-views')
 
         stream.add_interval_filter(start-60*60*8, start)
         stream.add_rib_period_filter(10000000000000)        

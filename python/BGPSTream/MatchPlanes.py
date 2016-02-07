@@ -2,6 +2,7 @@ import radix
 import editdistance
 import networkx as nx
 import matplotlib.pyplot as plt
+import sys
 
 
 class StateMatcher(object):
@@ -49,7 +50,7 @@ class StateMatcher(object):
     def match_states(self):
         for pref_d, vp_aspth_dict_d in self.trace_state.iteritems():
             print pref_d
-            best_match_val = 0
+            best_match_val = sys.maxint
             best_match_lst = []
             # raw_input('...')
             for vp_d, aspath_d in vp_aspth_dict_d.iteritems():
@@ -58,13 +59,13 @@ class StateMatcher(object):
                 vp_aspth_dict_c = self.bgp_state[pref_d]
                 for vp_c, aspath_c in vp_aspth_dict_c.iteritems():
                     dist = editdistance.eval(aspath_c.split(), aspath_d.split())
-                    if dist>best_match_val:
+                    if dist < best_match_val:
                         best_match_val = dist
                         best_match_lst = [vp_c]
                     elif dist == best_match_val:
                         best_match_lst.append(vp_c)
                     # print vp_d, '%', vp_c, '=>', editdistance.eval(aspath_c.split(), aspath_d.split())
-                # print vp_d, '%', best_match_val, '=>', best_match_lst
+                print vp_d, '%', best_match_val, '=>', best_match_lst
                 for vp_c in best_match_lst:
                     self.trace_bgp_math_graph.add_edge('d_{0}_{1}'.format(vp_d, pref_d), 'd_{0}_{1}'.format(vp_c, pref_d))
 
@@ -73,7 +74,7 @@ class StateMatcher(object):
         print len(self.trace_bgp_math_graph.edges())
         nx.draw_spectral(self.trace_bgp_math_graph, node_size=10, alpha=0.5, with_labels=False)
         plt.savefig('matching_graph', bbox_inches='tight', format='jpg', dpi=320)
-        # plt.show()
+        plt.show()
 
 if __name__ == '__main__':
     sm = StateMatcher()

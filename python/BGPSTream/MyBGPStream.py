@@ -54,40 +54,43 @@ def main(rib, target_prefs):
         cnt = 0
 
         while stream.get_next_record(rec):
+            # Print the record information only if it is not a valid record
+            if rec.status != "valid":
+                continue
+
             if rec.time < start:
-                elem = rec.get_next_elem()
+                print rec.status
+                try:
+                    elem = rec.get_next_elem()
 
-                rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.fields['as-path'])
-
+                    rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.fields['as-path'])
+                except:
+                    pass
             else:
 
                 rib.flush()
 
-                # Print the record information only if it is not a valid record
-                if rec.status != "valid":
-                    pass
-                    # print '*', rec.project, rec.collector, rec.type, rec.time, rec.status
-                else:
-                    cnt += 1
+                # print '*', rec.project, rec.collector, rec.type, rec.time, rec.status
+                cnt += 1
+                elem = rec.get_next_elem()
+
+                while elem:
+                    if elem.type != 'S':
+
+                        as_path = 'None'
+                        if elem.type == 'A':
+                            as_path = elem.fields['as-path']
+             
+                        # Print record and elem information
+                        # print rec.project, rec.collector, rec.type, rec.time, rec.status,
+                        # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
+                        
+                        rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.fields['as-path'], False)
+                        #bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(
+                        #    rec.collector, elem.peer_asn, elem.peer_address, rec.time,
+                        #    elem.type, elem.fields['prefix'], as_path))
+                        #bw.flush()
                     elem = rec.get_next_elem()
-
-                    while elem:
-                        if elem.type != 'S':
-
-                            as_path = 'None'
-                            if elem.type == 'A':
-                                as_path = elem.fields['as-path']
-                 
-                            # Print record and elem information
-                            # print rec.project, rec.collector, rec.type, rec.time, rec.status,
-                            # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
-                            
-                            rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.fields['as-path'], False)
-                            #bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(
-                            #    rec.collector, elem.peer_asn, elem.peer_address, rec.time,
-                            #    elem.type, elem.fields['prefix'], as_path))
-                            #bw.flush()
-                        elem = rec.get_next_elem()
 
     print 'Successful termination; Start time: {0}'.format(start)
 
@@ -103,11 +106,11 @@ if __name__ == '__main__':
             target_prefs.add(l.strip())
 
 
-    fd_up = open('./data/stream_{0}'.format(start), 'w')
-    fd_rib = open('./data/rib', 'w')
+    fd_up = open('./data/stream_{0}'.format(start), 'w', 100)
+    fd_rib = open('./data/rib', 'w', 100)
     rib = Rib(fd_rib, fd_up, target_prefs)    
 
-    main(rib)
+    main(rib, target_prefs)
 
     fd_up.close()
     fd_rib.close()

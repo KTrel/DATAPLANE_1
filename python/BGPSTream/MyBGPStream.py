@@ -41,7 +41,7 @@ def main():
 
         # Consider RIPE RRC 10 only
         stream.add_filter('record-type', 'updates')
-        stream.add_filter('collector', 'rrc00')
+        #stream.add_filter('collector', 'rrc00')
 
         # Consider this time interval:
         # Sat Aug  1 08:20:11 UTC 2015
@@ -67,12 +67,16 @@ def main():
                 while elem:
                     if elem.type != 'S':
 
+                        as_path = 'None'
+                        if elem.type == 'A':
+                            as_path = elem.fields['as-path']
+             
                         # Print record and elem information
                         # print rec.project, rec.collector, rec.type, rec.time, rec.status,
                         # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
-                        bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\n'.format(
-                            rec.project, rec.collector, rec.type, rec.time, rec.status,
-                            elem.type, elem.fields['prefix'], elem.peer_address, elem.peer_asn, elem.fields))
+                        bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(
+                            rec.collector, elem.peer_asn, elem.peer_address, rec.time,
+                            elem.type, elem.fields['prefix'], as_path))
                         bw.flush()
                     elem = rec.get_next_elem()
 

@@ -38,4 +38,6 @@ class Rib:
                 for prefix, as_path in self.rib[c][peer_ip].items():
                     res_string += str(c)+'\t'+str(peer_ip)+'\t'+str(prefix)+'\t'+str(as_path)+'\n'
 
+        return res_string
+
     

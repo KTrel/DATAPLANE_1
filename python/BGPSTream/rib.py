@@ -18,6 +18,15 @@ class Rib:
                 self.up_fd.write(str(collector)+'\t'+str(peer_ip)+'\t'+str(ts)+'\t'+str(prefix)+'\t'+str(self.rib[collector][peer_ip][prefix])+'\t'+str(as_path)+'\n')
         self.rib[collector][peer_ip][prefix] = as_path
 
+    def remove_from_rib(self, collector, peer_ip, prefix):
+        if self.is_flushed and prefix in self.rib[collector][peer_ip]:
+            self.up_fd.write(str(collector)+'\t'+str(peer_ip)+'\t'+str(ts)+'\t'+str(prefix)+'\t'+str(self.rib[collector][peer_ip][prefix])+'\t'+"W"+'\n')
+        try:
+            self.rib[collector][peer_ip][].pop(prefix, None)
+            print "KeyError"
+        except KeyError:
+            pass
+
     def flush(self):
         if not self.is_flushed:
             self.is_flushed = True

@@ -104,11 +104,17 @@ class StateMatcher(object):
             best_match_val = sys.maxint
             best_match_lst = []
             # raw_input('...')
+
+            try:
+                vp_aspth_dict_c = self.bgp_state[pref_d]
+            except KeyError:
+                print 'nothing seen in RIB for {0}; skipping!!!'.format(pref_d)
+                continue
+
             for vp_d, aspath_d in vp_aspth_dict_d.iteritems():
                 # if vp_d not in self.pref_d_c[pref_d]:
                 #     self.pref_d_c[pref_d][vp_d] = {}
 
-                vp_aspth_dict_c = self.bgp_state[pref_d]
                 for vp_c, aspath_c in vp_aspth_dict_c.iteritems():
                     dist = editdistance.eval(aspath_c.split(), aspath_d.split())
 

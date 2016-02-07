@@ -55,11 +55,12 @@ def main():
         else:
             elem = rec.get_next_elem()
             while elem:
-                if elem.type == 'U':
+                if elem.type == 'A':
+                    #print elem.fields['as-path']
                     prefixes_update[elem.fields['prefix']] += 1
 
                 if elem.type == 'W':
-                    prefixes_update[elem.fields['prefix']] += 1
+                    prefixes_withdraw[elem.fields['prefix']] += 1
 
                 #print rec.project, rec.collector, rec.type, rec.time, rec.status,
                 #print elem.type, elem.peer_address, elem.peer_asn, elem.fields

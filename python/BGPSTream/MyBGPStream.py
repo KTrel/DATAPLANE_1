@@ -74,9 +74,8 @@ def main():
                         elem.type, elem.fields['prefix'], elem.peer_address, elem.peer_asn, elem.fields))
                     elem = rec.get_next_elem()
 
-                # if cnt == 100:
-                #     break
-
+    print 'Successful termination; Start time: {0}'.format(start)
 
 if __name__ == '__main__':
     main()
+

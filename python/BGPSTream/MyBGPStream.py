@@ -47,12 +47,20 @@ def main(rib, target_prefs):
         # Start the stream
         stream.start()
 
+        cur_ts = 0
+
         while stream.get_next_record(rec):
             # Print the record information only if it is not a valid record
             if rec.status != "valid":
                 continue
 
             if rec.time < start:
+
+                # Just output some debug info ..
+                if cur_ts != rec.time:
+                    cur_ts = rec.time
+                    print cur_ts
+
                 elem = rec.get_next_elem()
                 while elem:
 

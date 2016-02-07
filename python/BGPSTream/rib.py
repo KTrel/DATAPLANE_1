@@ -15,7 +15,7 @@ class Rib:
             self.rib[collector] = {}
         if peer_ip not in self.rib[collector]:
             self.rib[collector][peer_ip] = {}
-        if is_flushed:
+        if self.is_flushed:
             if self.rib[collector][peer_ip][prefix] != as_path:
                 self.up_fd.write(str(collector)+'\t'+str(peer_ip)+'\t'+str(ts)+'\t'+str(prefix)+'\t'+str(self.rib[collector][peer_ip][prefix])+'\t'+str(as_path)+'\n')
         self.rib[collector][peer_ip][prefix] = as_path

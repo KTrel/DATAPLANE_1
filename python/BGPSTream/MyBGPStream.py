@@ -67,6 +67,8 @@ def main(rib, target_prefs):
                     if elem.type == 'A' or elem.type == 'R':
                         if elem.fields['prefix'] in target_prefs:
                             rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.time, elem.fields['as-path'])
+                    elif elem.type == 'W':
+                        rib.remove_from_rib(rec.collector, elem.peer_address, elem.fields['prefix'])
 
                     elem = rec.get_next_elem()
 
@@ -80,6 +82,8 @@ def main(rib, target_prefs):
                     if elem.type == 'A' or elem.type == 'R':
                         if elem.fields['prefix'] in target_prefs:
                             rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.time, elem.fields['as-path'])
+                    elif elem.type == 'W':
+                            rib.remove_from_rib(rec.collector, elem.peer_address, elem.fields['prefix'])
 
                     elem = rec.get_next_elem()
 

@@ -77,8 +77,8 @@ class StateMatcher(object):
 
                     if vp_c not in self.pref_c_d[pref_d]:
                         self.pref_c_d[pref_d][vp_c] = {}
-                    if vp_d not in self.pref_c_d[pref_d][vp_c]:
-                        self.pref_c_d[pref_d][vp_c] = {}
+                    # if vp_d not in self.pref_c_d[pref_d][vp_c]:
+                    #     self.pref_c_d[pref_d][vp_c][vp_d] = {}
                     self.pref_c_d[pref_d][vp_c][vp_d] = [dist, max(len(aspath_d.split()), len(aspath_c.split()))]
 
                     if dist < best_match_val:
@@ -98,7 +98,12 @@ class StateMatcher(object):
         # nx.draw_spectral(self.trace_bgp_math_graph, node_size=10, alpha=0.5, with_labels=False)
         # plt.savefig('matching_graph', bbox_inches='tight', format='jpg', dpi=320)
         # plt.show()
-        ofp = u'./data/matching.txt'
+
+        # ofp = u'./data/matching.txt'
+        # with open(ofp, 'w') as outfile:
+        #     json.dump(self.pref_c_d, outfile, indent=4, separators=(',', ': '))
+
+        ofp = u'./data/matching_pref-ctrl-data.txt'
         with open(ofp, 'w') as outfile:
             json.dump(self.pref_c_d, outfile, indent=4, separators=(',', ': '))
 

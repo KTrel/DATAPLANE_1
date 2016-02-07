@@ -38,6 +38,29 @@ class StateMatcher(object):
                 self.trace_state[pref] = {}
             self.trace_state[pref][asn] = as_path
 
+        path = '../../aspath-traceroute-planetlab'
+        br = open(path, 'rb')
+        first = True
+        for l in br:
+            if first:
+                first = False
+                continue
+            tokens = l.split(',')
+            if len(tokens) <= 2:
+                continue
+            print tokens[1]
+            pref = self.prefix_radix.search_best(tokens[1])
+            try:
+                pref = pref.prefix
+            except AttributeError:
+                print 'NO ASN', l
+                continue
+            asn = tokens[0]
+            as_path = ' '.join(tokens[2:])
+            if pref not in self.trace_state:
+                self.trace_state[pref] = {}
+            self.trace_state[pref][asn] = as_path
+
         self.bgp_state = {}
         path = '../../data/rib'
         br = open(path, 'rb')
@@ -81,11 +104,17 @@ class StateMatcher(object):
             best_match_val = sys.maxint
             best_match_lst = []
             # raw_input('...')
+
+            try:
+                vp_aspth_dict_c = self.bgp_state[pref_d]
+            except KeyError:
+                print 'nothing seen in RIB for {0}; skipping!!!'.format(pref_d)
+                continue
+
             for vp_d, aspath_d in vp_aspth_dict_d.iteritems():
                 # if vp_d not in self.pref_d_c[pref_d]:
                 #     self.pref_d_c[pref_d][vp_d] = {}
 
-                vp_aspth_dict_c = self.bgp_state[pref_d]
                 for vp_c, aspath_c in vp_aspth_dict_c.iteritems():
                     dist = editdistance.eval(aspath_c.split(), aspath_d.split())
 
@@ -150,6 +179,6 @@ class StateMatcher(object):
 if __name__ == '__main__':
     sm = StateMatcher()
     sm.match_states()
-    
+
     # sm.keep_updating()
     # sm.show_graph()

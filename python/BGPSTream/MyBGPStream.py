@@ -57,7 +57,6 @@ def main(rib, target_prefs):
                 while elem:
 
                     if elem.type == 'A' or elem.type == 'R':
-                        print elem.fields['prefix']
                         rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.time, elem.fields['as-path'])
 
                     elem = rec.get_next_elem()

@@ -64,7 +64,6 @@ def main(rib, target_prefs):
             else:
 
                 rib.flush()
-                print 'RIB flushed'
 
                 elem = rec.get_next_elem()
                 while elem:

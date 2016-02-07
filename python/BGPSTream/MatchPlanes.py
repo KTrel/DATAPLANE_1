@@ -20,6 +20,7 @@ class StateMatcher(object):
             self.prefix_radix.add(l.strip())
 
         self.trace_state = {}
+
         path = '../../data/aspaths-traceroutes-2'
         br = open(path, 'rb')
         for l in br:
@@ -32,11 +33,11 @@ class StateMatcher(object):
             except AttributeError:
                 print l
                 raw_input('???')
-            asn = tokens[1]
+            src = tokens[1]
             as_path = ' '.join(tokens[2:])
             if pref not in self.trace_state:
                 self.trace_state[pref] = {}
-            self.trace_state[pref][asn] = as_path
+            self.trace_state[pref][src] = as_path
 
         path = '../../aspath-traceroute-planetlab'
         br = open(path, 'rb')
@@ -55,11 +56,11 @@ class StateMatcher(object):
             except AttributeError:
                 print 'NO ASN', l
                 continue
-            asn = tokens[0]
+            src = tokens[0]
             as_path = ' '.join(tokens[2:])
             if pref not in self.trace_state:
                 self.trace_state[pref] = {}
-            self.trace_state[pref][asn] = as_path
+            self.trace_state[pref][src] = as_path
 
         self.bgp_state = {}
         path = '../../data/rib'
@@ -179,6 +180,6 @@ class StateMatcher(object):
 if __name__ == '__main__':
     sm = StateMatcher()
     sm.match_states()
+    sm.show_graph()
 
     # sm.keep_updating()
-    # sm.show_graph()

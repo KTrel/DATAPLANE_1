@@ -10,7 +10,7 @@ class Rib:
 
     def add_to_rib(self, collector, peer_ip, prefix, ts, as_path, isrib=True):
         print prefix
-        as_path = list_to_string(as_path)
+        as_path = self.list_to_string(as_path)
         if collector not in self.rib:
             self.rib[collector] = {}
         if peer_ip not in self.rib[collector]:

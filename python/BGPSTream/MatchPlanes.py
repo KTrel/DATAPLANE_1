@@ -38,6 +38,29 @@ class StateMatcher(object):
                 self.trace_state[pref] = {}
             self.trace_state[pref][asn] = as_path
 
+        path = '../../aspath-traceroute-planetlab'
+        br = open(path, 'rb')
+        first = True
+        for l in br:
+            if first:
+                first = False
+                continue
+            tokens = l.split(',')
+            if len(tokens) <= 2:
+                continue
+            print tokens[1]
+            pref = self.prefix_radix.search_best(tokens[1])
+            try:
+                pref = pref.prefix
+            except AttributeError:
+                print 'NO ASN', l
+                continue
+            asn = tokens[0]
+            as_path = ' '.join(tokens[2:])
+            if pref not in self.trace_state:
+                self.trace_state[pref] = {}
+            self.trace_state[pref][asn] = as_path
+
         self.bgp_state = {}
         path = '../../data/rib'
         br = open(path, 'rb')
@@ -150,6 +173,6 @@ class StateMatcher(object):
 if __name__ == '__main__':
     sm = StateMatcher()
     sm.match_states()
-    
+
     # sm.keep_updating()
     # sm.show_graph()

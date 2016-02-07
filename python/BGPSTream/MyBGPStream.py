@@ -1,5 +1,5 @@
 from optparse import OptionParser
-#from _pybgpstream import BGPStream, BGPRecord, BGPElem
+from _pybgpstream import BGPStream, BGPRecord, BGPElem
 from sets import Set
 
 

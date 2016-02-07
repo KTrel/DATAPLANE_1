@@ -23,8 +23,8 @@ class Rib:
             self.up_fd.write(str(collector)+'\t'+str(peer_ip)+'\t'+str(ts)+'\t'+str(prefix)+'\t'+str(self.rib[collector][peer_ip][prefix])+'\t'+"W"+'\n')
         try:
             self.rib[collector][peer_ip].pop(prefix, None)
-            print "KeyError"
         except KeyError:
+            print "KeyError"
             pass
 
     def flush(self):

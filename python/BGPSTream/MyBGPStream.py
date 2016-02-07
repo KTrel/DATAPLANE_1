@@ -41,7 +41,7 @@ def main(rib, target_prefs):
         stream.add_filter('project', 'ris')
         stream.add_filter('project', 'routeviews')
 
-        stream.add_interval_filter(start-60*60*8, start)
+        stream.add_interval_filter(start-60*60*8, end)
         stream.add_rib_period_filter(10000000000000)        
 
         # Start the stream
@@ -52,18 +52,28 @@ def main(rib, target_prefs):
             if rec.status != "valid":
                 continue
 
-            #if rec.time < start:
-            elem = rec.get_next_elem()
-            while elem:
+            if rec.time < start:
+                elem = rec.get_next_elem()
+                while elem:
 
-                if elem.type == 'A' or elem.type == 'R':
-                    rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.time, elem.fields['as-path'])
+                    if elem.type == 'A' or elem.type == 'R':
+                        rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.time, elem.fields['as-path'])
+
+                    elem = rec.get_next_elem()
+
+            else:
+
+                rib.flush()
+                print 'RIB flushed'
 
                 elem = rec.get_next_elem()
+                while elem:
 
-            #else:
+                    if elem.type == 'A' or elem.type == 'R':
+                        rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.time, elem.fields['as-path'])
 
-        rib.flush()
+                    elem = rec.get_next_elem()
+
 
     print 'Successful termination; Start time: {0}'.format(start)
 

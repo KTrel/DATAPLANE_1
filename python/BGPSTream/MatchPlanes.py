@@ -1,3 +1,4 @@
+import math
 import radix
 import editdistance
 # import networkx as nx
@@ -19,10 +20,12 @@ class StateMatcher(object):
             self.prefix_radix.add(l.strip())
 
         self.trace_state = {}
-        path = '../../aspath-traceroutes'
+        path = '../../data/aspaths-traceroutes-2'
         br = open(path, 'rb')
         for l in br:
             tokens = l.split()
+            if len(tokens) <= 2:
+                continue
             pref = self.prefix_radix.search_best(tokens[0])
             try:
                 pref = pref.prefix
@@ -68,7 +71,7 @@ class StateMatcher(object):
                 for vp_c, aspath_c in vp_aspth_dict_c.iteritems():
                     dist = editdistance.eval(aspath_c.split(), aspath_d.split())
 
-                    self.pref_d_c[pref_d][vp_d][vp_c] = [dist, {'data': aspath_d, 'ctrl': aspath_c}]
+                    self.pref_d_c[pref_d][vp_d][vp_c] = [dist, max(len(aspath_d.split()), len(aspath_c))]
 
                     # if vp_c not in self.c_pref_d:
                     #     self.c_pref_d[vp_c] = {}

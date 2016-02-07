@@ -1,6 +1,6 @@
 import radix
 import editdistance
-import networkx as nx
+# import networkx as nx
 # import matplotlib.pyplot as plt
 import sys
 import json
@@ -8,7 +8,7 @@ import json
 
 class StateMatcher(object):
     def __init__(self):
-        self.trace_bgp_math_graph = nx.DiGraph()
+        # self.trace_bgp_math_graph = nx.DiGraph()
         self.prefix_radix = radix.Radix()
         self.pref_d_c = {}
         # self.c_pref_d = {}
@@ -83,8 +83,9 @@ class StateMatcher(object):
                         best_match_lst.append(vp_c)
                     # print vp_d, '%', vp_c, '=>', editdistance.eval(aspath_c.split(), aspath_d.split())
                 # print vp_d, '%', best_match_val, '=>', best_match_lst
-                for vp_c in best_match_lst:
-                    self.trace_bgp_math_graph.add_edge('d_{0}_{1}'.format(vp_d, pref_d), 'd_{0}_{1}'.format(vp_c, pref_d))
+                """ NetworkX """
+                # for vp_c in best_match_lst:
+                #     self.trace_bgp_math_graph.add_edge('d_{0}_{1}'.format(vp_d, pref_d), 'd_{0}_{1}'.format(vp_c, pref_d))
 
     def show_graph(self):
         # print len(self.trace_bgp_math_graph.nodes())

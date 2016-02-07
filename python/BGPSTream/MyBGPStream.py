@@ -22,7 +22,7 @@ def getopts():
     return parser.parse_args()
 
 
-def main(rib, prefixes_set):
+def main(rib, target_prefs):
 
         
     # Create a new bgpstream instance and a reusable bgprecord instance
@@ -37,13 +37,15 @@ def main(rib, prefixes_set):
 
         # Consider RIPE RRC 10 only
         stream.add_filter('record-type', 'updates')
+        stream.add_filter('record-type', 'ribs')
         #stream.add_filter('collector', 'rrc00')
 
         # Consider this time interval:
         # Sat Aug  1 08:20:11 UTC 2015
         # stream.add_interval_filter(1438417216,1438417216)
         # stream.add_interval_filter(1451606400,1454785264
-        stream.add_interval_filter(start, end)
+        stream.add_interval_filter(start-8*60*60, end)
+        stream.add_rib_period_filter(60*24*60*60)        
 
         # Start the stream
         stream.start()
@@ -52,30 +54,40 @@ def main(rib, prefixes_set):
         cnt = 0
 
         while stream.get_next_record(rec):
-            # Print the record information only if it is not a valid record
-            if rec.status != "valid":
-                pass
-                # print '*', rec.project, rec.collector, rec.type, rec.time, rec.status
-            else:
-                cnt += 1
+            if rec.time < start:
                 elem = rec.get_next_elem()
 
-                while elem:
-                    if elem.type != 'S':
+                rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.fields['as-path'])
 
-                        as_path = 'None'
-                        if elem.type == 'A':
-                            as_path = elem.fields['as-path']
-             
-                        # Print record and elem information
-                        # print rec.project, rec.collector, rec.type, rec.time, rec.status,
-                        # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
-                        
-                        #bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(
-                        #    rec.collector, elem.peer_asn, elem.peer_address, rec.time,
-                        #    elem.type, elem.fields['prefix'], as_path))
-                        #bw.flush()
+            else:
+
+                rib.flush()
+
+                # Print the record information only if it is not a valid record
+                if rec.status != "valid":
+                    pass
+                    # print '*', rec.project, rec.collector, rec.type, rec.time, rec.status
+                else:
+                    cnt += 1
                     elem = rec.get_next_elem()
+
+                    while elem:
+                        if elem.type != 'S':
+
+                            as_path = 'None'
+                            if elem.type == 'A':
+                                as_path = elem.fields['as-path']
+                 
+                            # Print record and elem information
+                            # print rec.project, rec.collector, rec.type, rec.time, rec.status,
+                            # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
+                            
+                            rib.add_to_rib(rec.collector, elem.peer_address, elem.fields['prefix'], elem.fields['as-path'], False)
+                            #bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(
+                            #    rec.collector, elem.peer_asn, elem.peer_address, rec.time,
+                            #    elem.type, elem.fields['prefix'], as_path))
+                            #bw.flush()
+                        elem = rec.get_next_elem()
 
     print 'Successful termination; Start time: {0}'.format(start)
 

@@ -35,8 +35,8 @@ def main():
 
     with open('./data/stream_{0}'.format(start), 'wb') as bw:
         #for pref in target_prefs:
-        for ptmp in target_prefs:
-            stream.add_filter('prefix', ptmp)
+        #for ptmp in target_prefs:
+        #    stream.add_filter('prefix', ptmp)
         # stream.add_filter('prefix','0.0.0.0/0')
 
         # Consider RIPE RRC 10 only
@@ -63,16 +63,17 @@ def main():
             else:
                 cnt += 1
                 elem = rec.get_next_elem()
+
                 while elem:
-                    if elem.type == 'S':
-                        continue
-                    # Print record and elem information
-                    # print rec.project, rec.collector, rec.type, rec.time, rec.status,
-                    # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
-                    bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\n'.format(
-                        rec.project, rec.collector, rec.type, rec.time, rec.status,
-                        elem.type, elem.fields['prefix'], elem.peer_address, elem.peer_asn, elem.fields))
-                    bw.flush()
+                    if elem.type != 'S':
+
+                        # Print record and elem information
+                        # print rec.project, rec.collector, rec.type, rec.time, rec.status,
+                        # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
+                        bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\n'.format(
+                            rec.project, rec.collector, rec.type, rec.time, rec.status,
+                            elem.type, elem.fields['prefix'], elem.peer_address, elem.peer_asn, elem.fields))
+                        bw.flush()
                     elem = rec.get_next_elem()
 
     print 'Successful termination; Start time: {0}'.format(start)

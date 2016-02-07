@@ -1,14 +1,17 @@
 from optparse import OptionParser
 from _pybgpstream import BGPStream, BGPRecord, BGPElem
 from sets import Set
+from rib import Rib
 
 
 def getopts():
     parser = OptionParser()
     parser.add_option('-i', dest='in_folder', type=str,
                       default='', help='use raw counts')
-    parser.add_option('-o', dest='out_file', type=str,
-                      default="error.txt", help='use raw counts')
+    parser.add_option('-o', dest='updates_file', type=str,
+                      default="updates.txt", help='use raw counts')
+    parser.add_option('-r', dest='rib_file', type=str,
+                      default="rib.txt", help='use raw counts')
     parser.add_option('-s', dest='start_time', type=int,
                       default=1454630400, help='start time')
     parser.add_option('-e', dest='end_time', type=int,
@@ -19,15 +22,8 @@ def getopts():
     return parser.parse_args()
 
 
-def main():
-    (options, args) = getopts()
-    start = options.start_time
-    end = options.end_time
+def main(rib, prefixes_set):
 
-    target_prefs = Set()
-    with open('./../../atlas/anchor_prefix.txt', 'rb') as br:
-        for l in br:
-            target_prefs.add(l.strip())
         
     # Create a new bgpstream instance and a reusable bgprecord instance
     stream = BGPStream()
@@ -74,14 +70,32 @@ def main():
                         # Print record and elem information
                         # print rec.project, rec.collector, rec.type, rec.time, rec.status,
                         # print elem.type, elem.peer_address, elem.peer_asn, elem.fields, elem.pref
-                        bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(
-                            rec.collector, elem.peer_asn, elem.peer_address, rec.time,
-                            elem.type, elem.fields['prefix'], as_path))
-                        bw.flush()
+                        
+                        #bw.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(
+                        #    rec.collector, elem.peer_asn, elem.peer_address, rec.time,
+                        #    elem.type, elem.fields['prefix'], as_path))
+                        #bw.flush()
                     elem = rec.get_next_elem()
 
     print 'Successful termination; Start time: {0}'.format(start)
 
 if __name__ == '__main__':
-    main()
 
+    (options, args) = getopts()
+    start = options.start_time
+    end = options.end_time
+
+    target_prefs = Set()
+    with open('./../../atlas/anchor_prefix.txt', 'rb') as br:
+        for l in br:
+            target_prefs.add(l.strip())
+
+
+    fd_up = open('./data/stream_{0}'.format(start), 'w')
+    fd_rib = open('./data/rib', 'w')
+    rib = Rib(fd_rib, fd_up, target_prefs)    
+
+    main(rib)
+
+    fd_up.close()
+    fd_rib.close()

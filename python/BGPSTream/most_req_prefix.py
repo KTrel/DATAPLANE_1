@@ -26,9 +26,9 @@ def main():
     rec = BGPRecord()
 
     # Consider RIPE RRC 10 only
-    stream.add_filter('record-type','updates')
-    stream.add_filter('collector','rrc00')
-    stream.add_filter('prefix','0.0.0.0/0')
+    stream.add_filter('record-type', 'updates')
+    stream.add_filter('collector', 'rrc00')
+    stream.add_filter('prefix', '0.0.0.0/0')
 
     # Consider this time interval:
     # Sat Aug  1 08:20:11 UTC 2015

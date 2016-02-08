@@ -24,7 +24,7 @@ class Rib:
         try:
             self.rib[collector][peer_ip].pop(prefix, None)
         except KeyError:
-            print "KeyError"
+            #print "KeyError"
             pass
 
     def flush(self):
